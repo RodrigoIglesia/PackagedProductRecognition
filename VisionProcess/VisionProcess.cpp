@@ -48,7 +48,6 @@ void XferCallback(SapXferCallbackInfo* pInfo)
 
 int main(int argc, char* argv[])
 {
-    /* RUTINA PRINCIPAL: ADQUISICION DE IMAGENES */
     PlcComm plcOcj; // Invoque plc comm class.
     NeuralNetworkClassifier NNClassifier;  // Invoque Neural Network class.
 
@@ -69,7 +68,7 @@ int main(int argc, char* argv[])
 
     SapFormat sapFormat;
 
-    /* Variables de comunicacion IPC - Named Pipe*/
+    /* Named Pipe vars.*/
     HANDLE hPipe;
     DWORD dwWrite, dwWrite2, dwWrite3;
 
@@ -81,9 +80,9 @@ int main(int argc, char* argv[])
         NMPWAIT_USE_DEFAULT_WAIT,
         NULL);
 
-    /* INFO DEL SISTEMA DE ADQUISICION */
+    /* ACQ SYSTEM INFO*/
 
-    // Obtén número de tarjetas conectados
+    // Number of connected devices.
     int serverCount = SapManager::GetServerCount();
     if (serverCount == 0)
     {
@@ -91,7 +90,7 @@ int main(int argc, char* argv[])
         return FALSE;
     }
 
-    // Obten nombre e indice de los servidores conectados
+    // Name and index of connected device.
     BOOL serverFound = FALSE;
     BOOL cameraFound = FALSE;
     int serverIndex = 1;
@@ -100,24 +99,24 @@ int main(int argc, char* argv[])
     {
         SapManager::GetServerName(serverIndex, acqServerName, sizeof(acqServerName));
 
-        printf("Camara conectada %d: %s\n", serverIndex, acqServerName);
+        printf("Camera connected %d: %s\n", serverIndex, acqServerName);
         cameraFound = TRUE;
     }
 
-    // Al menos debe existir un servidor conectado
+    // At least there must be 1 cammera connected.
     if (!serverFound && !cameraFound)
     {
-        printf("No se encontro camara!\n");
+        printf("Not cammera found!\n");
         return FALSE;
     }
 
-    // Equipos conectados al servidor
+    // Resources connected.
     int cameraIndex = 0;
     char cameraName[CORPRM_GETSIZE(CORACQ_PRM_LABEL)];
     SapManager::GetResourceName(acqServerName, SapManager::ResourceAcqDevice, cameraIndex, cameraName, sizeof(cameraName));
-    printf("Recursos conectados %d: %s\n", cameraIndex + 1, cameraName);
+    printf("Resources connected %d: %s\n", cameraIndex + 1, cameraName);
 
-    /* RUTINA DE ADQUISICION */
+    /* Sapera objects */
     SapLocation loc(acqServerName, 0);
 
     AcqDevice = SapAcqDevice(loc, configFilename);
@@ -126,20 +125,19 @@ int main(int argc, char* argv[])
     AcqDeviceToBuf = SapAcqDeviceToBuf(&AcqDevice, &Buffers, XferCallback, &View);
     Xfer = &AcqDeviceToBuf;
 
-    /* Crear objetos*/
-    // Objeto de adquisición
+    // Acq object.
     if (!AcqDevice.Create())
         goto FreeHandles;
 
-    // Objeto Buffer
+    // Buffer object.
     if (!Buffers.Create())
         goto FreeHandles;
 
-    // Objeto transferencia
+    // Transfer object.
     if (Xfer && !Xfer->Create())
         goto FreeHandles;
 
-    // Objeto View
+    // View object
     //if (!View.Create())
     //    goto FreeHandles;
 
