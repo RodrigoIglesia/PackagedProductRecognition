@@ -38,11 +38,11 @@ using namespace std;
 #define CAMERA_LINK_SERVER_NAME_PREFIX "CameraLink_"
 
 
-// Transfer callback function - Llama a esta funcion cada vez que adquirimos una imagen
+// Transfer callback function.
 void XferCallback(SapXferCallbackInfo* pInfo)
 {
     SapView* pView = (SapView*)pInfo->GetContext();
-    //pView->Show(); // Muestra la imagen en la interfaz Sapera.
+    //pView->Show();
     SapBuffer* Buffer_View = (pView->GetBuffer());
 }
 
@@ -51,12 +51,12 @@ int main(int argc, char* argv[])
     PlcComm plcOcj; // Invoque plc comm class.
     NeuralNetworkClassifier NNClassifier;  // Invoque Neural Network class.
 
-    /* Variables de config. de la camara.*/
-    UINT32 acqDeviceNumber; // Num de dispositivo de la camara.
-    char acqServerName[CORSERVER_MAX_STRLEN]; // Nombre de la camara.
-    const char* configFilename = new char[MAX_PATH]; // Fichero de config.
+    /* Camera config vars.*/
+    UINT32 acqDeviceNumber;
+    char acqServerName[CORSERVER_MAX_STRLEN];
+    const char* configFilename = new char[MAX_PATH];
 
-    configFilename = "D_Genie_C1600.ccf"; // Ruta al fichero de config de la camara.
+    configFilename = "D_Genie_C1600.ccf"; // Camera config file.
 
     SapAcquisition Acq;
     SapAcqDevice AcqDevice;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
     HANDLE hPipe;
     DWORD dwWrite, dwWrite2, dwWrite3;
 
-    // Crea el pipe.
+    // Create the Pipe.
     hPipe = CreateNamedPipe(L"\\\\.\\pipe\\Pipe", PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT,
         1,
         1024 * 16,
